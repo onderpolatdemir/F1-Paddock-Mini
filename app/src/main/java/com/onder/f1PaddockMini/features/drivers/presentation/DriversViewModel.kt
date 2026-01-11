@@ -83,8 +83,8 @@ class DriversViewModel @Inject constructor(
     val state: StateFlow<DriversState> = _state
 
     init {
-        // Uygulama açılınca varsayılan olarak 2024'ü çeksin
-        loadDrivers("2024")
+        // Uygulama açılınca varsayılan olarak 2025'i çeksin
+        loadDrivers("2025")
     }
 
     fun onEvent(event: DriversEvent) {

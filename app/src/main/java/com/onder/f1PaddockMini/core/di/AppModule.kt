@@ -14,13 +14,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 @InstallIn(SingletonComponent::class) // Uygulama yaşadığı sürece bu nesneler yaşar
 object AppModule {
 
+    // 1. Adım: Hilt'e Retrofit nesnesini nasıl oluşturacağını öğretin.
     @Provides
     @Singleton
-    fun provideF1Api(): F1Api {
+    fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(F1Api::class.java)
+    }
+
+    // 2. Adım: Hilt'in oluşturduğu Retrofit nesnesini parametre olarak alın.
+    @Provides
+    @Singleton
+    fun provideF1Api(retrofit: Retrofit): F1Api {
+        return retrofit.create(F1Api::class.java)
     }
 }

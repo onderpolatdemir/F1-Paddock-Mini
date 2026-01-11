@@ -1,0 +1,42 @@
+package com.onder.f1PaddockMini.pages
+
+import com.onder.f1PaddockMini.R
+
+val driverImageMap: Map<String, Int> = mapOf(
+    "max_verstappen" to R.drawable.max,
+    "norris" to R.drawable.lando,
+    "leclerc" to R.drawable.leclerc,
+    "sainz" to R.drawable.sainz,
+    "piastri" to R.drawable.piastri,
+    "russell" to R.drawable.russel,
+    "alonso" to R.drawable.alonso,
+    "hamilton" to R.drawable.lewis,
+    "gasly" to R.drawable.gasly,
+    "antonelli" to R.drawable.antonelli,
+    "ocon" to R.drawable.ocon,
+    "albon" to R.drawable.albon,
+    "sainz" to R.drawable.sainz,
+    "tsunoda" to R.drawable.tsunoda,
+    "alonso" to R.drawable.alonso,
+    "hulkenberg" to R.drawable.hulkenberg,
+    "hadjar" to R.drawable.hadjar,
+    "bearman" to R.drawable.bearman,
+    "lawson" to R.drawable.lawson,
+    "ocon" to R.drawable.ocon,
+    "stroll" to R.drawable.stroll,
+    "tsunoda" to R.drawable.tsunoda,
+    "bortoleto" to R.drawable.bortoleto,
+    "colapinto" to R.drawable.colapinto,
+    "vettel" to R.drawable.vettel,
+
+    "McLaren" to R.drawable.mclaren,
+    "Mercedes" to R.drawable.mercedes,
+    "Red Bull" to R.drawable.redbull,
+    "Ferrari" to R.drawable.ferrari,
+    "Williams" to R.drawable.williams,
+    "RB F1 Team" to R.drawable.rb,
+    "Aston Martin" to R.drawable.aston_martin,
+    "Haas F1 Team" to R.drawable.haas,
+    "Sauber" to R.drawable.sauber,
+    "Alpine F1 Team" to R.drawable.alpine,
+)

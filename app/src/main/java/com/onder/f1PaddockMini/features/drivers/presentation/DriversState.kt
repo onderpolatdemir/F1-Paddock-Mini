@@ -6,5 +6,5 @@ data class DriversState(
     val drivers: List<Driver> = emptyList(),
     val isLoading: Boolean = false,
     val error: String = "",
-    val selectedYear: String = "2024"
+    val selectedYear: String = "2025"
 )

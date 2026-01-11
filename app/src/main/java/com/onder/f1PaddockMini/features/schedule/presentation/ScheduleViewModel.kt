@@ -34,8 +34,26 @@ class ScheduleViewModel @Inject constructor(
 
     fun onEvent(event: ScheduleEvent) {
         when(event) {
-            is ScheduleEvent.YearChanged -> loadSchedule(event.year)
-            // Expand/Collapse eventleri buraya eklenebilir
+            is ScheduleEvent.YearChanged -> {
+                _state.value = _state.value.copy(selectedYear = event.year)
+                loadSchedule(event.year)
+            }
+            is ScheduleEvent.RaceExpanded -> {
+                val updatedRaces = _state.value.races.map { race ->
+                    if (race.id == event.raceId) {
+                        race.copy(isExpanded = !race.isExpanded)
+                    } else {
+                        race
+                    }
+                }
+                _state.value = _state.value.copy(races = updatedRaces)
+            }
+            is ScheduleEvent.NavigateToRaceResults -> {
+                // Navigation logic will be handled later
+            }
+            is ScheduleEvent.NavigateToQualifyingResults -> {
+                // Navigation logic will be handled later
+            }
         }
     }
 

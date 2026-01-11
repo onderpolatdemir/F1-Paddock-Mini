@@ -10,10 +10,12 @@ import com.onder.f1PaddockMini.features.schedule.domain.model.QualifyingResult
 fun RaceDto.toRace(): Race {
     return Race(
         id = round,
+        round = round,
         name = raceName,       // Artık race_name değil, raceName
         date = date,
         circuit = circuitName, // Artık circuit_name değil, circuitName
-        location = "$city, $country" // Şehir ve Ülkeyi birleştirdik
+        location = "$city, $country", // Şehir ve Ülkeyi birleştirdik
+        country = country
     )
 }
 
