@@ -29,8 +29,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,7 +65,7 @@ fun StandingsPage(
     }
 
     
-    val years = (2014..2025).map { it.toString() }.reversed()
+    val years = (2014..2026).map { it.toString() }.reversed()
 
     Column(
         modifier = Modifier
@@ -235,8 +238,7 @@ fun TabButton(
 
 @Composable
 fun DriverRow(driver: Driver) {
-    val imageRes = driverImageMap[driver.id]
-        ?: R.drawable.placeholder_driver // fallback
+    val imageUrl = driverImageMap[driver.id]
 
     Box(
         modifier = Modifier
@@ -278,10 +280,13 @@ fun DriverRow(driver: Driver) {
 
             // Right side: Image and Points
             Box {
-                Image(
-                    painter = painterResource(id = imageRes),
+                AsyncImage(
+                    model = imageUrl,
                     contentDescription = driver.name,
-                    modifier = Modifier.size(80.dp)
+                    placeholder = painterResource(R.drawable.placeholder_driver),
+                    error = painterResource(R.drawable.placeholder_driver),
+                    modifier = Modifier.size(80.dp),
+                    contentScale = ContentScale.Crop
                 )
                 Text(
                     text = "${driver.points.toInt()} PTS",
@@ -301,8 +306,7 @@ fun DriverRow(driver: Driver) {
 
 @Composable
 fun ConstructorRow(team: TeamStanding) {
-    val imageRes = driverImageMap[team.teamName]
-        ?: R.drawable.placeholder_driver // fallback
+    val imageUrl = driverImageMap[team.teamName]
 
     Box(
         modifier = Modifier
@@ -338,10 +342,13 @@ fun ConstructorRow(team: TeamStanding) {
 
             // Right side: Image and Points
             Box {
-                Image(
-                    painter = painterResource(id = imageRes),
+                AsyncImage(
+                    model = imageUrl,
                     contentDescription = team.teamName,
-                    modifier = Modifier.size(80.dp)
+                    placeholder = painterResource(R.drawable.placeholder_driver),
+                    error = painterResource(R.drawable.placeholder_driver),
+                    modifier = Modifier.size(80.dp),
+                    contentScale = ContentScale.Crop
                 )
                 Text(
                     text = "${team.points.toInt()} PTS",

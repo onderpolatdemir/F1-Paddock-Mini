@@ -31,8 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,9 +54,9 @@ fun SchedulePage(
     val state by scheduleViewModel.state.collectAsState()
     
     var yearDropdownExpanded by remember { mutableStateOf(false) }
-    var selectedYear by remember { mutableStateOf("2025") }
+    var selectedYear by remember { mutableStateOf("2026") }
     
-    val years = (2014..2025).map { it.toString() }.reversed()
+    val years = (2014..2026).map { it.toString() }.reversed()
 
     Column(
         modifier = Modifier
@@ -164,12 +167,27 @@ fun RaceRow(
     onQualifyingResultsClick: () -> Unit
 ) {
     Column {
+        val flagResUrl = driverImageMap[race.country]
+        var boxModifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onRaceClick)
+            .background(Color(0xFF1A1A1A))
+            
+        if (flagResUrl != null) {
+            boxModifier = boxModifier.paint(
+                painter = rememberAsyncImagePainter(model = flagResUrl),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                alpha = 0.2f,
+                sizeToIntrinsics = false
+            )
+        }
+        
+        boxModifier = boxModifier.padding(16.dp)
+
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onRaceClick)
-                .background(Color(0xFF1A1A1A), RoundedCornerShape(12.dp))
-                .padding(16.dp)
+            modifier = boxModifier
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

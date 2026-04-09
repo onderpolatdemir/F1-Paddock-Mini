@@ -84,7 +84,7 @@ class DriversViewModel @Inject constructor(
 
     init {
         // Uygulama açılınca varsayılan olarak 2025'i çeksin
-        loadDrivers("2025")
+        loadDrivers("2026")
     }
 
     fun onEvent(event: DriversEvent) {

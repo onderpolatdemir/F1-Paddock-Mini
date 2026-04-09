@@ -22,14 +22,14 @@ class ScheduleViewModel @Inject constructor(
         val races: List<Race> = emptyList(),
         val isLoading: Boolean = false,
         val error: String = "",
-        val selectedYear: String = "2025"
+        val selectedYear: String = "2026"
     )
 
     private val _state = MutableStateFlow(ScheduleState())
     val state: StateFlow<ScheduleState> = _state
 
     init {
-        loadSchedule("2025") // Varsayılan açılış
+        loadSchedule("2026") // Varsayılan açılış
     }
 
     fun onEvent(event: ScheduleEvent) {

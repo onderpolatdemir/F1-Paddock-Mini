@@ -22,14 +22,14 @@ class StandingsViewModel @Inject constructor(
         val standings: List<TeamStanding> = emptyList(),
         val isLoading: Boolean = false,
         val error: String = "",
-        val selectedYear: String = "2025"
+        val selectedYear: String = "2026"
     )
 
     private val _state = MutableStateFlow(StandingsState())
     val state: StateFlow<StandingsState> = _state
 
     init {
-        loadStandings("2025")
+        loadStandings("2026")
     }
 
 //    fun onYearChanged(year: String) {

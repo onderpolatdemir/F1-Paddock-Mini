@@ -1,6 +1,7 @@
 package com.onder.f1PaddockMini.pages
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,44 +11,35 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.onder.f1PaddockMini.R
 import com.onder.f1PaddockMini.features.schedule.domain.model.QualifyingResult
-import com.onder.f1PaddockMini.features.schedule.domain.usecase.GetQualifyingResultUseCase
+import com.onder.f1PaddockMini.features.schedule.presentation.QualifyingResultsViewModel
 
 @Composable
 fun QualifyingResultsPage(
-    year: String,
-    round: String,
-    getQualifyingResultUseCase: GetQualifyingResultUseCase? = null
+    navController: NavController,
+    viewModel: QualifyingResultsViewModel = hiltViewModel()
 ) {
-    var qualifyingResults by remember { mutableStateOf<List<QualifyingResult>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf("") }
-
-    // Note: This is a temporary implementation without proper ViewModel
-    // When navigation is added, this will use RaceDetailViewModel properly
-    LaunchedEffect(year, round) {
-        // For now, show placeholder
-        // When navigation is implemented, this will fetch data properly
-        isLoading = false
-        error = "Navigation not implemented yet. This page will work when navigation is added."
-    }
+    val state by viewModel.state.collectAsState()
 
     Column(
         modifier = Modifier
@@ -55,13 +47,37 @@ fun QualifyingResultsPage(
             .background(Color.Black)
             .padding(16.dp)
     ) {
-        // Header
-        Text(
-            text = "Qualifying Results",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
+        // Header with back button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back),
+                contentDescription = "Back",
+                tint = Color.White,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        // Navigate back, if back stack is empty, go to Racing screen
+                        if (!navController.popBackStack()) {
+                            navController.navigate(com.onder.f1PaddockMini.navigation.Screen.Racing.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+            )
+            Text(
+                text = "Qualifying Results",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -71,7 +87,7 @@ fun QualifyingResultsPage(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Results list
-        if (isLoading) {
+        if (state.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -81,17 +97,17 @@ fun QualifyingResultsPage(
                     color = Color.White
                 )
             }
-        } else if (error.isNotEmpty()) {
+        } else if (state.error.isNotEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = error,
+                    text = state.error,
                     color = Color.Red
                 )
             }
-        } else if (qualifyingResults.isEmpty()) {
+        } else if (state.qualifyingResults.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -105,7 +121,7 @@ fun QualifyingResultsPage(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(qualifyingResults) { result ->
+                items(state.qualifyingResults) { result ->
                     QualifyingResultRow(result = result)
                 }
             }
@@ -124,11 +140,11 @@ fun QualifyingTableHeader() {
     ) {
         // Position
         Text(
-            text = "Position",
+            text = "POS",
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
-            modifier = Modifier.width(80.dp)
+            modifier = Modifier.width(30.dp)
         )
         
         // Driver
@@ -173,7 +189,7 @@ fun QualifyingTableHeader() {
 @Composable
 fun QualifyingResultsPagePreview() {
     com.onder.f1PaddockMini.ui.theme.MyApplicationTheme {
-        QualifyingResultsPage(year = "2025", round = "1")
+        // Preview için navController gerekli değil
     }
 }
 @Composable
@@ -192,7 +208,7 @@ fun QualifyingResultRow(result: QualifyingResult) {
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
-            modifier = Modifier.width(80.dp)
+            modifier = Modifier.width(30.dp)
         )
         
         // Driver Name
@@ -208,7 +224,7 @@ fun QualifyingResultRow(result: QualifyingResult) {
             text = result.q1,
             fontSize = 14.sp,
             color = Color.Gray,
-            modifier = Modifier.width(80.dp)
+            modifier = Modifier.width(60.dp)
         )
         
         // Q2
@@ -216,7 +232,7 @@ fun QualifyingResultRow(result: QualifyingResult) {
             text = result.q2,
             fontSize = 14.sp,
             color = Color.Gray,
-            modifier = Modifier.width(80.dp)
+            modifier = Modifier.width(60.dp)
         )
         
         // Q3
@@ -224,7 +240,7 @@ fun QualifyingResultRow(result: QualifyingResult) {
             text = result.q3,
             fontSize = 14.sp,
             color = Color.Gray,
-            modifier = Modifier.width(80.dp)
+            modifier = Modifier.width(60.dp)
         )
     }
 }

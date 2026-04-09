@@ -73,13 +73,8 @@ fun NavigationGraph(
                     navArgument("year") { type = NavType.StringType },
                     navArgument("round") { type = NavType.StringType }
                 )
-            ) { backStackEntry ->
-                val year = backStackEntry.arguments?.getString("year") ?: ""
-                val round = backStackEntry.arguments?.getString("round") ?: ""
-                RaceResultsPage(
-                    year = year,
-                    round = round
-                )
+            ) {
+                RaceResultsPage(navController = navController)
             }
             
             composable(
@@ -88,13 +83,8 @@ fun NavigationGraph(
                     navArgument("year") { type = NavType.StringType },
                     navArgument("round") { type = NavType.StringType }
                 )
-            ) { backStackEntry ->
-                val year = backStackEntry.arguments?.getString("year") ?: ""
-                val round = backStackEntry.arguments?.getString("round") ?: ""
-                QualifyingResultsPage(
-                    year = year,
-                    round = round
-                )
+            ) {
+                QualifyingResultsPage(navController = navController)
             }
         }
     }

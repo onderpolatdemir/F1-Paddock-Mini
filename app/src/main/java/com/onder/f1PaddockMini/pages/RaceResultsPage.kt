@@ -2,6 +2,7 @@ package com.onder.f1PaddockMini.pages
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,45 +17,31 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.onder.f1PaddockMini.R
-import com.onder.f1PaddockMini.core.common.Resource
 import com.onder.f1PaddockMini.features.schedule.domain.model.RaceResult
-import com.onder.f1PaddockMini.features.schedule.domain.usecase.GetRaceResultUseCase
-import javax.inject.Inject
+import com.onder.f1PaddockMini.features.schedule.presentation.RaceResultsViewModel
 
 @Composable
 fun RaceResultsPage(
-    year: String,
-    round: String,
-    getRaceResultUseCase: GetRaceResultUseCase? = null
+    navController: NavController,
+    viewModel: RaceResultsViewModel = hiltViewModel()
 ) {
-    var raceResults by remember { mutableStateOf<List<RaceResult>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf("") }
-
-    // Note: This is a temporary implementation without proper ViewModel
-    // When navigation is added, this will use RaceDetailViewModel properly
-    LaunchedEffect(year, round) {
-        // For now, show placeholder
-        // When navigation is implemented, this will fetch data properly
-        isLoading = false
-        error = "Navigation not implemented yet. This page will work when navigation is added."
-    }
+    val state by viewModel.state.collectAsState()
 
     Column(
         modifier = Modifier
@@ -62,13 +49,37 @@ fun RaceResultsPage(
             .background(Color.Black)
             .padding(16.dp)
     ) {
-        // Header
-        Text(
-            text = "Race Results",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
+        // Header with back button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back),
+                contentDescription = "Back",
+                tint = Color.White,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        // Navigate back, if back stack is empty, go to Racing screen
+                        if (!navController.popBackStack()) {
+                            navController.navigate(com.onder.f1PaddockMini.navigation.Screen.Racing.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+            )
+            Text(
+                text = "Race Results",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -78,7 +89,7 @@ fun RaceResultsPage(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Results list
-        if (isLoading) {
+        if (state.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -88,17 +99,17 @@ fun RaceResultsPage(
                     color = Color.White
                 )
             }
-        } else if (error.isNotEmpty()) {
+        } else if (state.error.isNotEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = error,
+                    text = state.error,
                     color = Color.Red
                 )
             }
-        } else if (raceResults.isEmpty()) {
+        } else if (state.raceResults.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -112,7 +123,7 @@ fun RaceResultsPage(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(raceResults) { result ->
+                items(state.raceResults) { result ->
                     RaceResultRow(result = result)
                 }
             }
@@ -171,7 +182,7 @@ fun TableHeader() {
 @Composable
 fun RaceResultsPagePreview() {
     com.onder.f1PaddockMini.ui.theme.MyApplicationTheme {
-        RaceResultsPage(year = "2025", round = "1")
+        // Preview için navController gerekli değil
     }
 }
 @Composable
@@ -199,9 +210,12 @@ fun RaceResultRow(result: RaceResult) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.max),
+            val imageUrl = getDriverImage(result.driverName)
+            AsyncImage(
+                model = imageUrl,
                 contentDescription = result.driverName,
+                placeholder = painterResource(R.drawable.placeholder_driver),
+                error = painterResource(R.drawable.placeholder_driver),
                 modifier = Modifier.size(40.dp)
             )
             Text(
